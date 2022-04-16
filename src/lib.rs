@@ -17,7 +17,9 @@ impl Board {
     fn check_row(&self, row: usize) -> bool {
         let mut elem_checked: [bool; 9] = [false; 9];
         for elem in self.board.slice(s![row, ..]).iter() {
-            if !elem_checked[*elem as usize - 1] {
+            if *elem == 0 {
+                continue;
+            } else if !elem_checked[*elem as usize - 1] {
                 elem_checked[*elem as usize - 1] = true;
             } else {
                 return false;
@@ -29,7 +31,9 @@ impl Board {
     fn check_column(&self, col: usize) -> bool {
         let mut elem_checked: [bool; 9] = [false; 9];
         for elem in self.board.slice(s![.., col]).iter() {
-            if !elem_checked[*elem as usize - 1] {
+            if *elem == 0 {
+                continue;
+            } else if !elem_checked[*elem as usize - 1] {
                 elem_checked[*elem as usize - 1] = true;
             } else {
                 return false;
@@ -45,11 +49,28 @@ impl Board {
         for i in 0..3 {
             for j in 0..3 {
                 let elem = self.board[(row_start + i, col_start + j)];
-                if !elem_checked[elem as usize - 1] {
+                if elem == 0 {
+                    continue;
+                } else if !elem_checked[elem as usize - 1] {
                     elem_checked[elem as usize - 1] = true;
                 } else {
                     return false;
                 }
+            }
+        }
+        true
+    }
+
+    fn check_complete(&self) -> bool {
+        for i in 0..9 {
+            if !self.check_row(i) {
+                return false;
+            }
+            if !self.check_column(i) {
+                return false;
+            }
+            if !self.check_square(i / 3, i % 3) {
+                return false;
             }
         }
         true
@@ -134,15 +155,17 @@ mod tests {
     #[test]
     fn test_check_row() {
         let valid_board = init_valid_board();
+        let empty_board = Board::init();
         for i in 0..9 {
             assert!(valid_board.check_row(i));
+            assert!(empty_board.check_row(i));
         }
 
         // two 1s in the first row
         let invalid_board = Board::new(array![
             [1, 4, 7, 2, 5, 1, 3, 6, 9],
             [2, 5, 8, 3, 6, 9, 4, 7, 1],
-            [3, 6, 9, 4, 7, 1, 5, 8, 2],
+            [3, 6, 9, 4, 7, 0, 5, 8, 2],
             [4, 7, 1, 5, 8, 2, 6, 9, 3],
             [5, 8, 2, 6, 9, 3, 7, 1, 4],
             [6, 9, 3, 7, 1, 4, 8, 2, 5],
@@ -159,8 +182,10 @@ mod tests {
     #[test]
     fn test_check_column() {
         let valid_board = init_valid_board();
+        let empty_board = Board::init();
         for i in 0..9 {
             assert!(valid_board.check_column(i));
+            assert!(empty_board.check_column(i));
         }
 
         // two 1s in the first column
@@ -168,7 +193,7 @@ mod tests {
             [1, 4, 7, 2, 5, 8, 3, 6, 9],
             [2, 5, 8, 3, 6, 9, 4, 7, 1],
             [3, 6, 9, 4, 7, 1, 5, 8, 2],
-            [1, 7, 1, 5, 8, 2, 6, 9, 3],
+            [1, 7, 0, 5, 8, 2, 6, 9, 3],
             [5, 8, 2, 6, 9, 3, 7, 1, 4],
             [6, 9, 3, 7, 1, 4, 8, 2, 5],
             [7, 1, 4, 8, 2, 5, 9, 3, 6],
@@ -184,9 +209,11 @@ mod tests {
     #[test]
     fn check_square() {
         let valid_board = init_valid_board();
+        let empty_board = Board::init();
         for i in 0..3 {
             for j in 0..3 {
                 assert!(valid_board.check_square(i, j));
+                assert!(empty_board.check_square(i, j));
             }
         }
 
@@ -194,8 +221,8 @@ mod tests {
         let invalid_board = Board::new(array![
             [1, 4, 7, 2, 5, 8, 3, 6, 9],
             [2, 5, 8, 3, 6, 9, 4, 7, 1],
-            [3, 6, 1, 4, 7, 1, 5, 8, 2],
-            [4, 7, 1, 5, 8, 2, 6, 9, 3],
+            [3, 6, 1, 4, 7, 0, 5, 8, 2],
+            [4, 7, 0, 5, 8, 2, 6, 9, 3],
             [5, 8, 2, 6, 9, 3, 7, 1, 4],
             [6, 9, 3, 7, 1, 4, 8, 2, 5],
             [7, 1, 4, 8, 2, 5, 9, 3, 6],
@@ -208,5 +235,55 @@ mod tests {
                 assert!(valid_board.check_square(i, j));
             }
         }
+    }
+
+    #[test]
+    fn test_check_complete() {
+        let valid_board = init_valid_board();
+        let empty_board = Board::init();
+        assert!(valid_board.check_complete());
+        assert!(empty_board.check_complete());
+
+        // two 1s in the first row
+        let invalid_board = Board::new(array![
+            [1, 4, 7, 2, 5, 1, 3, 6, 9],
+            [2, 5, 8, 3, 6, 9, 4, 7, 1],
+            [3, 6, 9, 4, 7, 0, 5, 8, 2],
+            [4, 7, 1, 5, 8, 2, 6, 9, 3],
+            [5, 8, 2, 6, 9, 3, 7, 1, 4],
+            [6, 9, 3, 7, 1, 4, 8, 2, 5],
+            [7, 1, 4, 8, 2, 5, 9, 3, 6],
+            [8, 2, 5, 9, 3, 6, 1, 4, 7],
+            [9, 3, 6, 1, 4, 7, 2, 5, 8]
+        ]);
+        assert!(!invalid_board.check_complete());
+
+        // two 1s in the first column
+        let invalid_board = Board::new(array![
+            [1, 4, 7, 2, 5, 8, 3, 6, 9],
+            [2, 5, 8, 3, 6, 9, 4, 7, 1],
+            [3, 6, 9, 4, 7, 1, 5, 8, 2],
+            [4, 7, 1, 5, 8, 2, 6, 9, 3],
+            [1, 8, 2, 6, 9, 3, 7, 0, 4],
+            [6, 9, 3, 7, 1, 4, 8, 2, 5],
+            [7, 1, 4, 8, 2, 5, 9, 3, 6],
+            [8, 2, 5, 9, 3, 6, 1, 4, 7],
+            [9, 3, 6, 1, 4, 7, 2, 5, 8]
+        ]);
+        assert!(!invalid_board.check_complete());
+
+        // two 1s in the first square
+        let invalid_board = Board::new(array![
+            [1, 4, 7, 2, 5, 8, 3, 6, 9],
+            [2, 5, 8, 3, 6, 9, 4, 7, 1],
+            [3, 6, 1, 4, 7, 0, 5, 8, 2],
+            [4, 7, 0, 5, 8, 2, 6, 9, 3],
+            [5, 8, 2, 6, 9, 3, 7, 1, 4],
+            [6, 9, 3, 7, 1, 4, 8, 2, 5],
+            [7, 1, 4, 8, 2, 5, 9, 3, 6],
+            [8, 2, 5, 9, 3, 6, 1, 4, 7],
+            [9, 3, 6, 1, 4, 7, 2, 5, 8]
+        ]);
+        assert!(!invalid_board.check_complete());
     }
 }
