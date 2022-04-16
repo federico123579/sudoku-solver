@@ -1,6 +1,7 @@
 use sudoku::Board;
 
-fn main() {
+#[test]
+fn test_print() {
     let board = Board::init();
     board.print_complete();
 }
