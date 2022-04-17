@@ -1,4 +1,8 @@
+use std::{fs::File, io::Read};
+
 use ndarray::prelude::*;
+
+mod utils;
 
 pub struct Board {
     board: Array2<u8>,
@@ -12,6 +16,26 @@ impl Board {
 
     pub fn new(values: Array2<u8>) -> Self {
         Board { board: values }
+    }
+
+    pub fn from_file(path: &str) -> Self {
+        let mut board = Array2::from_elem((9, 9), 0_u8);
+        let board_path = utils::get_board_dir().unwrap();
+        let mut file = File::open(board_path.as_path().join(path)).unwrap();
+        let mut contents = String::new();
+        file.read_to_string(&mut contents).unwrap();
+        let mut row = 0;
+        for line in contents.lines() {
+            let mut col = 0;
+            for c in line.chars() {
+                if c.is_digit(10) {
+                    board[[row, col]] = c.to_digit(10).unwrap() as u8;
+                }
+                col += 1;
+            }
+            row += 1;
+        }
+        Board { board }
     }
 
     fn check_row(&self, row: usize) -> bool {
@@ -149,6 +173,14 @@ mod tests {
             [1, 1, 1, 1, 1, 1, 1, 1, 1]
         ]);
         board.print_simple();
+    }
+
+    // test read from file
+    #[test]
+    fn test_from_file() {
+        let file_board = Board::from_file("empty_board.txt");
+        let empty_board = Board::init();
+        assert_eq!(file_board.board, empty_board.board);
     }
 
     // test check functions

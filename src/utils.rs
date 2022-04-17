@@ -1,6 +1,6 @@
 use std::path::{Path, PathBuf};
 
-fn get_board_dir() -> std::io::Result<PathBuf> {
+pub fn get_board_dir() -> std::io::Result<PathBuf> {
     // take the path pointing to this file, go up two level and then go to the board directory
     Path::new(file!())
         .ancestors()
