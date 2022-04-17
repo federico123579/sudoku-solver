@@ -145,33 +145,13 @@ mod tests {
     use super::*;
 
     fn init_valid_board() -> Board {
-        Board::new(array![
-            [1, 4, 7, 2, 5, 8, 3, 6, 9],
-            [2, 5, 8, 3, 6, 9, 4, 7, 1],
-            [3, 6, 9, 4, 7, 1, 5, 8, 2],
-            [4, 7, 1, 5, 8, 2, 6, 9, 3],
-            [5, 8, 2, 6, 9, 3, 7, 1, 4],
-            [6, 9, 3, 7, 1, 4, 8, 2, 5],
-            [7, 1, 4, 8, 2, 5, 9, 3, 6],
-            [8, 2, 5, 9, 3, 6, 1, 4, 7],
-            [9, 3, 6, 1, 4, 7, 2, 5, 8]
-        ])
+        Board::from_file("tests/valid_board.txt")
     }
 
     // test creational functions
     #[test]
     fn test_new() {
-        let board = Board::new(array![
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1],
-            [1, 1, 1, 1, 1, 1, 1, 1, 1]
-        ]);
+        let board = Board::new(Array2::from_elem((9, 9), 1_u8));
         board.print_simple();
     }
 
@@ -194,17 +174,7 @@ mod tests {
         }
 
         // two 1s in the first row
-        let invalid_board = Board::new(array![
-            [1, 4, 7, 2, 5, 1, 3, 6, 9],
-            [2, 5, 8, 3, 6, 9, 4, 7, 1],
-            [3, 6, 9, 4, 7, 0, 5, 8, 2],
-            [4, 7, 1, 5, 8, 2, 6, 9, 3],
-            [5, 8, 2, 6, 9, 3, 7, 1, 4],
-            [6, 9, 3, 7, 1, 4, 8, 2, 5],
-            [7, 1, 4, 8, 2, 5, 9, 3, 6],
-            [8, 2, 5, 9, 3, 6, 1, 4, 7],
-            [9, 3, 6, 1, 4, 7, 2, 5, 8]
-        ]);
+        let invalid_board = Board::from_file("tests/two_ones_in_a_row.txt");
         assert!(!invalid_board.check_row(0));
         for i in 1..9 {
             assert!(valid_board.check_row(i));
@@ -221,17 +191,7 @@ mod tests {
         }
 
         // two 1s in the first column
-        let invalid_board = Board::new(array![
-            [1, 4, 7, 2, 5, 8, 3, 6, 9],
-            [2, 5, 8, 3, 6, 9, 4, 7, 1],
-            [3, 6, 9, 4, 7, 1, 5, 8, 2],
-            [1, 7, 0, 5, 8, 2, 6, 9, 3],
-            [5, 8, 2, 6, 9, 3, 7, 1, 4],
-            [6, 9, 3, 7, 1, 4, 8, 2, 5],
-            [7, 1, 4, 8, 2, 5, 9, 3, 6],
-            [8, 2, 5, 9, 3, 6, 1, 4, 7],
-            [9, 3, 6, 1, 4, 7, 2, 5, 8]
-        ]);
+        let invalid_board = Board::from_file("tests/two_ones_in_a_col.txt");
         assert!(!invalid_board.check_column(0));
         for i in 1..9 {
             assert!(valid_board.check_column(i));
@@ -250,17 +210,7 @@ mod tests {
         }
 
         // two 1s in the first square
-        let invalid_board = Board::new(array![
-            [1, 4, 7, 2, 5, 8, 3, 6, 9],
-            [2, 5, 8, 3, 6, 9, 4, 7, 1],
-            [3, 6, 1, 4, 7, 0, 5, 8, 2],
-            [4, 7, 0, 5, 8, 2, 6, 9, 3],
-            [5, 8, 2, 6, 9, 3, 7, 1, 4],
-            [6, 9, 3, 7, 1, 4, 8, 2, 5],
-            [7, 1, 4, 8, 2, 5, 9, 3, 6],
-            [8, 2, 5, 9, 3, 6, 1, 4, 7],
-            [9, 3, 6, 1, 4, 7, 2, 5, 8]
-        ]);
+        let invalid_board = Board::from_file("tests/two_ones_in_a_square.txt");
         assert!(!invalid_board.check_square(0, 0));
         for i in 1..3 {
             for j in 1..3 {
@@ -277,45 +227,16 @@ mod tests {
         assert!(empty_board.check_complete());
 
         // two 1s in the first row
-        let invalid_board = Board::new(array![
-            [1, 4, 7, 2, 5, 1, 3, 6, 9],
-            [2, 5, 8, 3, 6, 9, 4, 7, 1],
-            [3, 6, 9, 4, 7, 0, 5, 8, 2],
-            [4, 7, 1, 5, 8, 2, 6, 9, 3],
-            [5, 8, 2, 6, 9, 3, 7, 1, 4],
-            [6, 9, 3, 7, 1, 4, 8, 2, 5],
-            [7, 1, 4, 8, 2, 5, 9, 3, 6],
-            [8, 2, 5, 9, 3, 6, 1, 4, 7],
-            [9, 3, 6, 1, 4, 7, 2, 5, 8]
-        ]);
+        let invalid_board = Board::from_file("tests/two_ones_in_a_row.txt");
         assert!(!invalid_board.check_complete());
 
         // two 1s in the first column
-        let invalid_board = Board::new(array![
-            [1, 4, 7, 2, 5, 8, 3, 6, 9],
-            [2, 5, 8, 3, 6, 9, 4, 7, 1],
-            [3, 6, 9, 4, 7, 1, 5, 8, 2],
-            [4, 7, 1, 5, 8, 2, 6, 9, 3],
-            [1, 8, 2, 6, 9, 3, 7, 0, 4],
-            [6, 9, 3, 7, 1, 4, 8, 2, 5],
-            [7, 1, 4, 8, 2, 5, 9, 3, 6],
-            [8, 2, 5, 9, 3, 6, 1, 4, 7],
-            [9, 3, 6, 1, 4, 7, 2, 5, 8]
-        ]);
+        let invalid_board = Board::from_file("tests/two_ones_in_a_col.txt");
         assert!(!invalid_board.check_complete());
 
         // two 1s in the first square
-        let invalid_board = Board::new(array![
-            [1, 4, 7, 2, 5, 8, 3, 6, 9],
-            [2, 5, 8, 3, 6, 9, 4, 7, 1],
-            [3, 6, 1, 4, 7, 0, 5, 8, 2],
-            [4, 7, 0, 5, 8, 2, 6, 9, 3],
-            [5, 8, 2, 6, 9, 3, 7, 1, 4],
-            [6, 9, 3, 7, 1, 4, 8, 2, 5],
-            [7, 1, 4, 8, 2, 5, 9, 3, 6],
-            [8, 2, 5, 9, 3, 6, 1, 4, 7],
-            [9, 3, 6, 1, 4, 7, 2, 5, 8]
-        ]);
+        let invalid_board = Board::from_file("tests/two_ones_in_a_square.txt");
         assert!(!invalid_board.check_complete());
     }
+
 }
