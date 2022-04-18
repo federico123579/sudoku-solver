@@ -105,7 +105,10 @@ impl Board {
     pub fn print_simple(&self) {
         for i in 0..9 {
             for j in 0..9 {
-                print!("{} ", self.board[(i, j)]);
+                match self.board[(i, j)] {
+                    0 => print!(". "),
+                    _ => print!("{} ", self.board[(i, j)]),
+                }
             }
             println!();
         }
@@ -133,7 +136,10 @@ impl Board {
                     }
                     _ => (),
                 }
-                print!("{} ", self.board[(i, j)])
+                match self.board[(i, j)] {
+                    0 => print!(". "),
+                    _ => print!("{} ", self.board[(i, j)]),
+                }
             }
             println!();
         }
