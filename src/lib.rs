@@ -2,6 +2,7 @@ use std::{fs::File, io::Read};
 
 use ndarray::prelude::*;
 
+mod guess;
 mod utils;
 
 pub struct Board {
@@ -244,5 +245,4 @@ mod tests {
         let invalid_board = Board::from_file("tests/two_ones_in_a_square.txt");
         assert!(!invalid_board.check_complete());
     }
-
 }
