@@ -1,22 +1,22 @@
-use std::{fs::File, io::Read};
-
-use ndarray::prelude::*;
-
+mod cli;
 mod guess;
 mod utils;
 
+use ndarray::prelude::*;
+use std::{fs::File, io::Read};
+
 pub struct Board {
-    board: Array2<u8>,
+    values: Array2<u8>,
 }
 
 impl Board {
-    pub fn init() -> Self {
+    pub fn empty() -> Self {
         let board = Array2::from_elem((9, 9), 0_u8);
-        Board { board }
+        Board { values: board }
     }
 
     pub fn new(values: Array2<u8>) -> Self {
-        Board { board: values }
+        Board { values }
     }
 
     pub fn from_file(path: &str) -> Self {
@@ -36,12 +36,12 @@ impl Board {
             }
             row += 1;
         }
-        Board { board }
+        Board { values: board }
     }
 
     fn check_row(&self, row: usize) -> bool {
         let mut elem_checked: [bool; 9] = [false; 9];
-        for elem in self.board.slice(s![row, ..]).iter() {
+        for elem in self.values.slice(s![row, ..]).iter() {
             if *elem == 0 {
                 continue;
             } else if !elem_checked[*elem as usize - 1] {
@@ -55,7 +55,7 @@ impl Board {
 
     fn check_column(&self, col: usize) -> bool {
         let mut elem_checked: [bool; 9] = [false; 9];
-        for elem in self.board.slice(s![.., col]).iter() {
+        for elem in self.values.slice(s![.., col]).iter() {
             if *elem == 0 {
                 continue;
             } else if !elem_checked[*elem as usize - 1] {
@@ -73,7 +73,7 @@ impl Board {
         let col_start = col * 3;
         for i in 0..3 {
             for j in 0..3 {
-                let elem = self.board[(row_start + i, col_start + j)];
+                let elem = self.values[(row_start + i, col_start + j)];
                 if elem == 0 {
                     continue;
                 } else if !elem_checked[elem as usize - 1] {
@@ -100,51 +100,6 @@ impl Board {
         }
         true
     }
-
-    // print utility functions
-
-    pub fn print_simple(&self) {
-        for i in 0..9 {
-            for j in 0..9 {
-                match self.board[(i, j)] {
-                    0 => print!(". "),
-                    _ => print!("{} ", self.board[(i, j)]),
-                }
-            }
-            println!();
-        }
-    }
-
-    pub fn print_complete(&self) {
-        for i in 0..10 {
-            match i {
-                0 => println!("┌───────┬───────┬───────┐"),
-                3 | 6 => println!("├───────┼───────┼───────┤"),
-                // last line
-                9 => {
-                    println!("└───────┴───────┴───────┘");
-                    break;
-                }
-                _ => (),
-            }
-            for j in 0..10 {
-                match j {
-                    0 | 3 | 6 => print!("│ "),
-                    // last column
-                    9 => {
-                        print!("│");
-                        break;
-                    }
-                    _ => (),
-                }
-                match self.board[(i, j)] {
-                    0 => print!(". "),
-                    _ => print!("{} ", self.board[(i, j)]),
-                }
-            }
-            println!();
-        }
-    }
 }
 
 #[cfg(test)]
@@ -166,15 +121,15 @@ mod tests {
     #[test]
     fn test_from_file() {
         let file_board = Board::from_file("empty_board.txt");
-        let empty_board = Board::init();
-        assert_eq!(file_board.board, empty_board.board);
+        let empty_board = Board::empty();
+        assert_eq!(file_board.values, empty_board.values);
     }
 
     // test check functions
     #[test]
     fn test_check_row() {
         let valid_board = init_valid_board();
-        let empty_board = Board::init();
+        let empty_board = Board::empty();
         for i in 0..9 {
             assert!(valid_board.check_row(i));
             assert!(empty_board.check_row(i));
@@ -191,7 +146,7 @@ mod tests {
     #[test]
     fn test_check_column() {
         let valid_board = init_valid_board();
-        let empty_board = Board::init();
+        let empty_board = Board::empty();
         for i in 0..9 {
             assert!(valid_board.check_column(i));
             assert!(empty_board.check_column(i));
@@ -208,7 +163,7 @@ mod tests {
     #[test]
     fn check_square() {
         let valid_board = init_valid_board();
-        let empty_board = Board::init();
+        let empty_board = Board::empty();
         for i in 0..3 {
             for j in 0..3 {
                 assert!(valid_board.check_square(i, j));
@@ -229,7 +184,7 @@ mod tests {
     #[test]
     fn test_check_complete() {
         let valid_board = init_valid_board();
-        let empty_board = Board::init();
+        let empty_board = Board::empty();
         assert!(valid_board.check_complete());
         assert!(empty_board.check_complete());
 

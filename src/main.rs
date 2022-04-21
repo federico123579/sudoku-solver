@@ -1,6 +1,6 @@
 use sudoku::Board;
 
 fn main() {
-    let board = Board::init();
-    board.print_complete();
+    let empty_board = Board::empty();
+    empty_board.print_complete();
 }
