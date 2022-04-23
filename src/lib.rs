@@ -5,6 +5,7 @@ mod utils;
 use ndarray::prelude::*;
 use std::{fs::File, io::Read};
 
+#[derive(Clone)]
 pub struct Board {
     values: Array2<u8>,
 }
