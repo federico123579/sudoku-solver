@@ -101,6 +101,17 @@ impl Board {
         }
         true
     }
+
+    fn is_complete(&self) -> bool {
+        for i in 0..9 {
+            for j in 0..9 {
+                if self.values[(i, j)] == 0 {
+                    return false;
+                }
+            }
+        }
+        true
+    }
 }
 
 #[cfg(test)]
