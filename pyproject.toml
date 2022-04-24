@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "tools"
+version = "0.1.0"
+description = ""
+authors = ["Federico Lolli <federico123579@gmail.com>"]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+numpy = "^1.22.3"
+fire = "^0.4.0"
+tqdm = "^4.64.0"
+
+[tool.poetry.dev-dependencies]
+black = "^22.3.0"
+
+[tool.poetry.scripts]
+generate = "tools.generate_sudoku:run_main"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
