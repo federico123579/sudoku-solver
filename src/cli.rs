@@ -1,3 +1,5 @@
+use colored::*;
+
 use crate::Board;
 
 impl Board {
@@ -37,6 +39,37 @@ impl Board {
                 }
                 match self.values[(i, j)] {
                     0 => print!(". "),
+                    _ => print!("{} ", self.values[(i, j)]),
+                }
+            }
+            println!();
+        }
+    }
+
+    pub fn print_diff(&self, other: &Board) {
+        for i in 0..10 {
+            match i {
+                0 => println!("┌───────┬───────┬───────┐"),
+                3 | 6 => println!("├───────┼───────┼───────┤"),
+                // last line
+                9 => {
+                    println!("└───────┴───────┴───────┘");
+                    break;
+                }
+                _ => (),
+            }
+            for j in 0..10 {
+                match j {
+                    0 | 3 | 6 => print!("│ "),
+                    // last column
+                    9 => {
+                        print!("│");
+                        break;
+                    }
+                    _ => (),
+                }
+                match other.values[(i, j)] {
+                    0 => print!("{} ", self.values[(i, j)].to_string().as_str().red().bold()),
                     _ => print!("{} ", self.values[(i, j)]),
                 }
             }
