@@ -9,7 +9,7 @@ struct GuessWrongError {
 }
 
 #[derive(Debug, Clone)]
-struct UnsolvableError;
+pub struct UnsolvableError;
 
 #[derive(Clone, Copy, Debug)]
 enum Guess {
@@ -19,6 +19,7 @@ enum Guess {
 }
 
 impl Guess {
+    #[allow(dead_code)]
     fn check(&self, number: &u8) -> bool {
         match self {
             Guess::Hit(n) | Guess::Prior(n) => n == number,
@@ -69,6 +70,7 @@ impl Guess {
     }
 }
 
+#[allow(dead_code)]
 #[derive(Clone)]
 struct BoardSolver {
     board_to_solve: Board,
@@ -216,6 +218,12 @@ impl BoardSolver {
     }
 }
 
+impl Board {
+    pub fn solve(&self) -> Result<Board, UnsolvableError> {
+        BoardSolver::from_board(self.clone()).solve()
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -227,7 +235,7 @@ mod tests {
             ($test_name: ident, $file_num: expr) => {
                 #[test]
                 fn $test_name() {
-                    let board_to_solve = Board::from_file(
+                    let board_to_solve = Board::from_board_dir(
                         format!(
                             "{}/boards/complete/quiz-{:0>2}.txt",
                             env!("CARGO_MANIFEST_DIR"),
@@ -239,7 +247,7 @@ mod tests {
                     println!("board to solve:");
                     board_to_solve.print_simple();
 
-                    let expected_board = Board::from_file(
+                    let expected_board = Board::from_board_dir(
                         format!(
                             "{}/boards/complete/solution-{:0>2}.txt",
                             env!("CARGO_MANIFEST_DIR"),
@@ -276,7 +284,7 @@ mod tests {
     }
 
     fn test_exlcude_matches_from_file(file_path: &str) {
-        let board = Board::from_file(file_path);
+        let board = Board::from_board_dir(file_path);
         board.print_simple();
         let mut solver = BoardSolver::from_board(board);
         for i in 0..9 {

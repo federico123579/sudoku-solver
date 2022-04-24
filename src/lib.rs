@@ -22,8 +22,7 @@ impl Board {
 
     pub fn from_file(path: &str) -> Self {
         let mut board = Array2::from_elem((9, 9), 0_u8);
-        let board_path = utils::get_board_dir().unwrap();
-        let mut file = File::open(board_path.as_path().join(path)).unwrap();
+        let mut file = File::open(path).unwrap();
         let mut contents = String::new();
         file.read_to_string(&mut contents).unwrap();
         let mut row = 0;
@@ -38,6 +37,11 @@ impl Board {
             row += 1;
         }
         Board { values: board }
+    }
+
+    pub fn from_board_dir(path: &str) -> Self {
+        let board_path = utils::get_board_dir().unwrap();
+        Self::from_file(board_path.as_path().join(path).to_str().unwrap())
     }
 
     fn check_row(&self, row: usize) -> bool {
@@ -119,7 +123,7 @@ mod tests {
     use super::*;
 
     fn init_valid_board() -> Board {
-        Board::from_file("tests/valid_board.txt")
+        Board::from_board_dir("tests/valid_board.txt")
     }
 
     // test creational functions
@@ -132,7 +136,7 @@ mod tests {
     // test read from file
     #[test]
     fn test_from_file() {
-        let file_board = Board::from_file("empty_board.txt");
+        let file_board = Board::from_board_dir("empty_board.txt");
         let empty_board = Board::empty();
         assert_eq!(file_board.values, empty_board.values);
     }
@@ -148,7 +152,7 @@ mod tests {
         }
 
         // two 1s in the first row
-        let invalid_board = Board::from_file("tests/two_ones_in_a_row.txt");
+        let invalid_board = Board::from_board_dir("tests/two_ones_in_a_row.txt");
         assert!(!invalid_board.check_row(0));
         for i in 1..9 {
             assert!(valid_board.check_row(i));
@@ -165,7 +169,7 @@ mod tests {
         }
 
         // two 1s in the first column
-        let invalid_board = Board::from_file("tests/two_ones_in_a_col.txt");
+        let invalid_board = Board::from_board_dir("tests/two_ones_in_a_col.txt");
         assert!(!invalid_board.check_column(0));
         for i in 1..9 {
             assert!(valid_board.check_column(i));
@@ -184,7 +188,7 @@ mod tests {
         }
 
         // two 1s in the first square
-        let invalid_board = Board::from_file("tests/two_ones_in_a_square.txt");
+        let invalid_board = Board::from_board_dir("tests/two_ones_in_a_square.txt");
         assert!(!invalid_board.check_square(0, 0));
         for i in 1..3 {
             for j in 1..3 {
@@ -201,15 +205,15 @@ mod tests {
         assert!(empty_board.check_complete());
 
         // two 1s in the first row
-        let invalid_board = Board::from_file("tests/two_ones_in_a_row.txt");
+        let invalid_board = Board::from_board_dir("tests/two_ones_in_a_row.txt");
         assert!(!invalid_board.check_complete());
 
         // two 1s in the first column
-        let invalid_board = Board::from_file("tests/two_ones_in_a_col.txt");
+        let invalid_board = Board::from_board_dir("tests/two_ones_in_a_col.txt");
         assert!(!invalid_board.check_complete());
 
         // two 1s in the first square
-        let invalid_board = Board::from_file("tests/two_ones_in_a_square.txt");
+        let invalid_board = Board::from_board_dir("tests/two_ones_in_a_square.txt");
         assert!(!invalid_board.check_complete());
     }
 }
