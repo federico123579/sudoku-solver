@@ -184,6 +184,10 @@ impl BoardSolver {
         // flags
         let mut can_be_reduced: bool = true;
 
+        if !self.board_to_solve.check_complete() {
+            return Err(UnsolvableError);
+        }
+
         while !self.solving_board.is_complete() {
             let mut counter = 0;
             if can_be_reduced {
